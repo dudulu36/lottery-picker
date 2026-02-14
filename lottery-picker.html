@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>幸运选号助手888</title>
+    <style>
+        /* 页面基础样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            padding: 10px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* 标题样式 */
+        .title {
+            text-align: center;
+            color: #e74c3c;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            padding: 10px;
+            background-color: white;
+            border-radius: 10px;
+        }
+
+        /* 彩票类型选择区域 */
+        .lottery-type {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 15px;
+            background-color: white;
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        .lottery-type button {
+            flex: 1;
+            margin: 0 5px;
+            padding: 10px;
+            border: 2px solid #e74c3c;
+            background-color: white;
+            color: #e74c3c;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .lottery-type button.active {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        /* 选号区域 */
+        .number-area {
+            background-color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .area-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .number-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+
+        .number-grid .number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid #ddd;
+            background-color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .number-grid .number.selected {
+            background-color: #e74c3c;
+            color: white;
+            border-color: #e74c3c;
+        }
+
+        /* 按钮区域 */
+        .button-area {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 15px;
+        }
+
+        .button-area button {
+            flex: 1;
+            margin: 0 5px;
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .button-area .random-one {
+            background-color: #3498db;
+            color: white;
+        }
+
+        .button-area .random-five {
+            background-color: #2ecc71;
+            color: white;
+        }
+
+        .button-area .copy {
+            background-color: #f39c12;
+            color: white;
+        }
+
+        .button-area .add-friend {
+            background-color: #9b59b6;
+            color: white;
+        }
+
+        /* 结果显示区域 */
+        .result-area {
+            background-color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .result-area .result {
+            font-size: 18px;
+            color: #333;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .result-area .result span {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+
+        /* 二维码弹窗 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            max-width: 80%;
+        }
+
+        .modal-content h3 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .modal-content img {
+            width: 200px;
+            height: 200px;
+            margin-bottom: 15px;
+        }
+
+        .modal-content p {
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .modal-content button {
+            padding: 10px 20px;
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <!-- 标题 -->
+    <div class="title">幸运选号助手888</div>
+
+    <!-- 彩票类型选择 -->
+    <div class="lottery-type">
+        <button class="active" onclick="selectLotteryType('ssq')">双色球</button>
+        <button onclick="selectLotteryType('3d')">3D</button>
+    </div>
+
+    <!-- 选号区域 -->
+    <div class="number-area" id="numberArea">
+        <!-- 动态生成选号区域 -->
+    </div>
+
+    <!-- 按钮区域 -->
+    <div class="button-area">
+        <button class="random-one" onclick="randomOne()">机选一注</button>
+        <button class="random-five" onclick="randomFive()">机选五注</button>
+        <button class="copy" onclick="copyNumbers()">复制号码</button>
+        <button class="add-friend" onclick="showQRCode()">加好友</button>
+    </div>
+
+    <!-- 结果显示区域 -->
+    <div class="result-area">
+        <div class="result" id="result">请选择号码或机选</div>
+    </div>
+
+    <!-- 二维码弹窗 -->
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <h3>扫码添加好友</h3>
+            <img src="https://via.placeholder.com/200" alt="微信二维码">
+            <p>长按识别二维码添加好友</p>
+            <button onclick="closeModal()">关闭</button>
+        </div>
+    </div>
+
+    <script>
+        // 当前选择的彩票类型
+        let currentLotteryType = 'ssq';
+
+        // 选中的号码
+        let selectedNumbers = [];
+
+        // 彩票类型配置
+        const lotteryConfig = {
+            ssq: {
+                name: '双色球',
+                redCount: 6,
+                redMax: 33,
+                blueCount: 1,
+                blueMax: 16
+            },
+            '3d': {
+                name: '3D',
+                redCount: 3,
+                redMax: 9,
+                blueCount: 0,
+                blueMax: 0
+            }
+        };
+
+        // 选择彩票类型
+        function selectLotteryType(type) {
+            currentLotteryType = type;
+            selectedNumbers = [];
+
+            // 更新按钮样式
+            const buttons = document.querySelectorAll('.lottery-type button');
+            buttons.forEach(button => {
+                button.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // 重新生成选号区域
+            generateNumberArea();
+            updateResult();
+        }
+
+        // 生成选号区域
+        function generateNumberArea() {
+            const config = lotteryConfig[currentLotteryType];
+            const numberArea = document.getElementById('numberArea');
+            let html = '';
+
+            // 红球区域
+            if (config.redCount > 0) {
+                html += '<div class="area-title">红球（选' + config.redCount + '个）</div>';
+                html += '<div class="number-grid">';
+                for (let i = 1; i <= config.redMax; i++) {
+                    const num = i < 10 ? '0' + i : i;
+                    html += '<div class="number" onclick="toggleNumber(this, ' + i + ', \'red\')">' + num + '</div>';
+                }
+                html += '</div>';
+            }
+
+            // 蓝球区域
+            if (config.blueCount > 0) {
+                html += '<div class="area-title">蓝球（选' + config.blueCount + '个）</div>';
+                html += '<div class="number-grid">';
+                for (let i = 1; i <= config.blueMax; i++) {
+                    const num = i < 10 ? '0' + i : i;
+                    html += '<div class="number" onclick="toggleNumber(this, ' + i + ', \'blue\')">' + num + '</div>';
+                }
+                html += '</div>';
+            }
+
+            numberArea.innerHTML = html;
+        }
+
+        // 切换号码选中状态
+        function toggleNumber(element, number, type) {
+            const config = lotteryConfig[currentLotteryType];
+            const index = selectedNumbers.findIndex(n => n.number === number && n.type === type);
+
+            if (index > -1) {
+                // 取消选中
+                selectedNumbers.splice(index, 1);
+                element.classList.remove('selected');
+            } else {
+                // 检查是否超过限制
+                const count = selectedNumbers.filter(n => n.type === type).length;
+                const maxCount = type === 'red' ? config.redCount : config.blueCount;
+
+                if (count >= maxCount) {
+                    alert(type === 'red' ? '红球最多选' + maxCount + '个' : '蓝球最多选' + maxCount + '个');
+                    return;
+                }
+
+                // 选中号码
+                selectedNumbers.push({ number, type });
+                element.classList.add('selected');
+            }
+
+            updateResult();
+        }
+
+        // 更新结果显示
+        function updateResult() {
+            const config = lotteryConfig[currentLotteryType];
+            const resultDiv = document.getElementById('result');
+
+            if (selectedNumbers.length === 0) {
+                resultDiv.innerHTML = '请选择号码或机选';
+                return;
+            }
+
+            const redNumbers = selectedNumbers
+                .filter(n => n.type === 'red')
+                .map(n => n.number < 10 ? '0' + n.number : n.number)
+                .sort((a, b) => a - b);
+
+            const blueNumbers = selectedNumbers
+                .filter(n => n.type === 'blue')
+                .map(n => n.number < 10 ? '0' + n.number : n.number)
+                .sort((a, b) => a - b);
+
+            let result = '';
+            if (redNumbers.length > 0) {
+                result += '红球：<span>' + redNumbers.join(' ') + '</span>';
+            }
+            if (blueNumbers.length > 0) {
+                result += ' 蓝球：<span>' + blueNumbers.join(' ') + '</span>';
+            }
+
+            resultDiv.innerHTML = result;
+        }
+
+        // 机选一注
+        function randomOne() {
+            const config = lotteryConfig[currentLotteryType];
+            selectedNumbers = [];
+
+            // 随机选择红球
+            if (config.redCount > 0) {
+                const redNumbers = [];
+                while (redNumbers.length < config.redCount) {
+                    const num = Math.floor(Math.random() * config.redMax) + 1;
+                    if (!redNumbers.includes(num)) {
+                        redNumbers.push(num);
+                    }
+                }
+                redNumbers.forEach(num => {
+                    selectedNumbers.push({ number: num, type: 'red' });
+                });
+            }
+
+            // 随机选择蓝球
+            if (config.blueCount > 0) {
+                const blueNumbers = [];
+                while (blueNumbers.length < config.blueCount) {
+                    const num = Math.floor(Math.random() * config.blueMax) + 1;
+                    if (!blueNumbers.includes(num)) {
+                        blueNumbers.push(num);
+                    }
+                }
+                blueNumbers.forEach(num => {
+                    selectedNumbers.push({ number: num, type: 'blue' });
+                });
+            }
+
+            // 更新界面
+            generateNumberArea();
+            updateResult();
+        }
+
+        // 机选五注
+        function randomFive() {
+            let results = [];
+            for (let i = 0; i < 5; i++) {
+                randomOne();
+                const config = lotteryConfig[currentLotteryType];
+                const redNumbers = selectedNumbers
+                    .filter(n => n.type === 'red')
+                    .map(n => n.number < 10 ? '0' + n.number : n.number)
+                    .sort((a, b) => a - b);
+
+                const blueNumbers = selectedNumbers
+                    .filter(n => n.type === 'blue')
+                    .map(n => n.number < 10 ? '0' + n.number : n.number)
+                    .sort((a, b) => a - b);
+
+                let result = '';
+                if (redNumbers.length > 0) {
+                    result += redNumbers.join(' ');
+                }
+                if (blueNumbers.length > 0) {
+                    result += ' + ' + blueNumbers.join(' ');
+                }
+                results.push(result);
+            }
+
+            // 清空选中号码
+            selectedNumbers = [];
+            generateNumberArea();
+            updateResult();
+
+            // 显示五注结果
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = results.map((r, i) => '<div>第' + (i + 1) + '注：<span>' + r + '</span></div>').join('');
+        }
+
+        // 复制号码
+        function copyNumbers() {
+            const resultDiv = document.getElementById('result');
+
+            // 检查是否有结果显示
+            if (resultDiv.innerHTML.includes('请选择号码或机选')) {
+                alert('请先选择号码或机选');
+                return;
+            }
+
+            // 提取结果显示中的号码
+            const spans = resultDiv.querySelectorAll('span');
+            let results = [];
+
+            spans.forEach(span => {
+                results.push(span.textContent);
+            });
+
+            // 复制到剪贴板
+            const textToCopy = results.join('\n');
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                alert('复制成功！');
+            }).catch(() => {
+                alert('复制失败，请手动复制');
+            });
+        }
+
+        // 显示二维码
+        function showQRCode() {
+            document.getElementById('modal').classList.add('show');
+        }
+
+        // 关闭弹窗
+        function closeModal() {
+            document.getElementById('modal').classList.remove('show');
+        }
+
+        // 初始化
+        generateNumberArea();
+    </script>
+</body>
+</html>
