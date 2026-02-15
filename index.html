@@ -5,6 +5,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>幸运选号助手888</title>
     <style>
+        /* CSS变量定义 */
+        :root {
+            --primary-color: #e74c3c;
+            --secondary-color: #3498db;
+            --wechat-green: #07c160;
+            --background-color: #fff5f5;
+            --text-color: #333333;
+            --border-color: #dddddd;
+            --card-background: #ffffff;
+            --dan-border-color: #f1c40f;
+            --dan-background-color: #fff9e6;
+            --filtered-color: #ff9800;
+            --red-ball-color: #e74c3c;
+            --red-ball-dark: #c0392b;
+            --blue-ball-color: #3498db;
+            --blue-ball-dark: #2980b9;
+            --primary-gradient: linear-gradient(135deg, #e74c3c 0%, #c0392b 50%, #3498db 100%);
+            --red-gradient: linear-gradient(135deg, #c0392b 0%, #e74c3c 50%, #ff7675 100%);
+            --blue-gradient: linear-gradient(135deg, #2980b9 0%, #3498db 50%, #74b9ff 100%);
+            --secondary-gradient: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            --header-gradient: linear-gradient(135deg, #fff5f5 0%, #f0f7ff 100%);
+            --background-gradient: linear-gradient(135deg, #fff5f5 0%, #f0f7ff 100%);
+            --card-gradient: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
+            --wechat-gradient: linear-gradient(135deg, #07c160 0%, #06ad56 100%);
+        }
+
         /* 页面基础样式 */
         * {
             margin: 0;
@@ -13,8 +39,8 @@
         }
 
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f5f5f5;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', Arial, sans-serif;
+            background: var(--background-gradient);
             padding: 10px;
             max-width: 600px;
             margin: 0 auto;
@@ -23,99 +49,367 @@
             flex-direction: column;
         }
 
-        /* 标题样式 */
+        /* 抬头区域 */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding: 15px;
+            background: var(--header-gradient);
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        /* 左侧：图标+标题 */
+        .header-left {
+            display: flex;
+            align-items: center;
+            flex: 1;
+        }
+
+        /* 图标 */
+        .logo {
+            width: 50px;
+            height: 50px;
+            background: var(--primary-gradient);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            box-shadow: 0 2px 8px rgba(231, 76, 60, 0.3);
+            flex-shrink: 0;
+        }
+
+        .logo-icon {
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .logo-icon::before {
+            content: '';
+            width: 16px;
+            height: 16px;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+            left: 2px;
+        }
+
+        .logo-icon::after {
+            content: '';
+            width: 16px;
+            height: 16px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 50%;
+            position: absolute;
+            right: 2px;
+        }
+
+        /* 标题文字 */
         .title {
-            text-align: center;
-            color: #e74c3c;
-            font-size: 24px;
+            font-size: 22px;
             font-weight: bold;
-            margin-bottom: 10px;
-            padding: 10px;
-            background-color: white;
-            border-radius: 10px;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* 右侧：加好友按钮 */
+        .header-right {
+            flex-shrink: 0;
+        }
+
+        .add-friend-header {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 25px;
+            background: var(--wechat-gradient);
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(7, 193, 96, 0.3);
+        }
+
+        .add-friend-header:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(7, 193, 96, 0.4);
         }
 
         /* 彩票类型选择区域 */
         .lottery-type {
             display: flex;
-            justify-content: space-around;
+            flex-wrap: nowrap;
+            justify-content: space-between;
+            gap: 4px;
             margin-bottom: 15px;
-            background-color: white;
-            padding: 10px;
-            border-radius: 10px;
+            background: var(--card-gradient);
+            padding: 10px 8px;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
         }
 
-        .lottery-type button {
-            flex: 1;
-            margin: 0 5px;
-            padding: 10px;
-            border: 2px solid #e74c3c;
-            background-color: white;
-            color: #e74c3c;
-            border-radius: 5px;
-            font-size: 16px;
+        /* 红蓝渐变按钮（双色球、大乐透、七星彩） */
+        .lottery-type button[data-type="ssq"],
+        .lottery-type button[data-type="dlt"],
+        .lottery-type button[data-type="qxc"] {
+            padding: 8px 10px;
+            border: 2px solid transparent;
+            background: linear-gradient(white, white) padding-box, var(--primary-gradient) border-box;
+            color: var(--primary-color);
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
+            min-width: 55px;
+            flex: 1;
+            white-space: nowrap;
         }
 
-        .lottery-type button.active {
-            background-color: #e74c3c;
+        .lottery-type button[data-type="ssq"]:hover,
+        .lottery-type button[data-type="dlt"]:hover,
+        .lottery-type button[data-type="qxc"]:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+        }
+
+        .lottery-type button[data-type="ssq"].active,
+        .lottery-type button[data-type="dlt"].active,
+        .lottery-type button[data-type="qxc"].active {
+            background: var(--primary-gradient);
             color: white;
+            border: none;
+            box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
+        }
+
+        /* 纯红色渐变按钮（3D、排列3、排列5、快乐8） */
+        .lottery-type button[data-type="3d"],
+        .lottery-type button[data-type="pl3"],
+        .lottery-type button[data-type="pl5"],
+        .lottery-type button[data-type="kl8"] {
+            padding: 8px 10px;
+            border: 2px solid transparent;
+            background: linear-gradient(white, white) padding-box, var(--red-gradient) border-box;
+            color: #c0392b;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 55px;
+            flex: 1;
+            white-space: nowrap;
+        }
+
+        .lottery-type button[data-type="3d"]:hover,
+        .lottery-type button[data-type="pl3"]:hover,
+        .lottery-type button[data-type="pl5"]:hover,
+        .lottery-type button[data-type="kl8"]:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+        }
+
+        .lottery-type button[data-type="3d"].active,
+        .lottery-type button[data-type="pl3"].active,
+        .lottery-type button[data-type="pl5"].active,
+        .lottery-type button[data-type="kl8"].active {
+            background: var(--red-gradient);
+            color: white;
+            border: none;
+            box-shadow: 0 4px 12px rgba(192, 57, 43, 0.3);
         }
 
         /* 选号区域 */
         .number-area {
-            background-color: white;
+            background: var(--card-gradient);
             padding: 15px;
-            border-radius: 10px;
+            border-radius: 15px;
             margin-bottom: 15px;
             flex: 1;
             overflow-y: auto;
+            overflow-x: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+        }
+
+        .red-area {
+            margin-bottom: 15px;
+        }
+
+        .blue-area {
+            margin-bottom: 0;
+        }
+
+        .position-area {
+            margin-bottom: 0;
+            overflow: hidden;
         }
 
         .area-title {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: bold;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+        }
+
+        .area-title::before {
+            content: '';
+            width: 4px;
+            height: 16px;
+            background: var(--primary-gradient);
+            border-radius: 2px;
+            margin-right: 8px;
+        }
+
+        .position-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            padding: 8px;
+            background: var(--card-gradient);
+            border-radius: 10px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .position-label {
+            min-width: 80px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-color);
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+
+        .position-numbers {
+            display: flex;
+            gap: 5px;
+            flex-wrap: nowrap;
+            flex: 1;
+        }
+
+        .position-numbers .number {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            border: 2px solid var(--border-color);
+            background: var(--card-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            margin: 0 auto;
+            flex-shrink: 0;
+        }
+
+        .position-numbers .number:hover {
+            transform: scale(1.15);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .position-numbers .number.selected {
+            background: linear-gradient(145deg, var(--red-ball-color), var(--red-ball-dark));
+            color: white;
+            border-color: transparent;
+            box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3), inset 0 2px 4px rgba(255, 255, 255, 0.2), inset 0 -2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .position-numbers .number.dan {
+            border: 3px solid var(--dan-border-color);
+            background: linear-gradient(145deg, #fff9e6, #fff3cd);
+            box-shadow: 0 2px 8px rgba(241, 196, 15, 0.25);
+        }
+
+        .position-numbers .number.dan.selected {
+            border: 3px solid var(--dan-border-color);
+            background: linear-gradient(145deg, #fff9e6, #fff3cd);
+            box-shadow: 0 2px 8px rgba(241, 196, 15, 0.25);
             color: #333;
+        }
+
+        .position-numbers .number.filtered {
+            background: linear-gradient(135deg, #ff9800, #f57c00);
+            text-decoration: line-through;
+            color: white;
+            border-color: transparent;
         }
 
         .number-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 8px;
-            margin-bottom: 10px;
+            gap: 10px;
+            margin-bottom: 15px;
         }
 
         .number-grid .number {
-            width: 44px;
-            height: 44px;
+            width: 42px;
+            height: 42px;
             border-radius: 50%;
-            border: 2px solid #ddd;
-            background-color: white;
+            border: 2px solid var(--border-color);
+            background: var(--card-gradient);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 18px;
+            font-size: 16px;
+            font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
+            margin: 0 auto;
+            position: relative;
         }
 
-        .number-grid .number.selected {
-            background-color: #e74c3c;
+        .number-grid .number:hover {
+            transform: scale(1.15);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        /* 红球样式 */
+        .red-area .number.selected {
+            background: linear-gradient(145deg, var(--red-ball-color), var(--red-ball-dark));
             color: white;
-            border-color: #e74c3c;
+            border-color: transparent;
+            box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3), inset 0 2px 4px rgba(255, 255, 255, 0.2), inset 0 -2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        /* 蓝球样式 */
+        .blue-area .number.selected {
+            background: linear-gradient(145deg, var(--blue-ball-color), var(--blue-ball-dark));
+            color: white;
+            border-color: transparent;
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3), inset 0 2px 4px rgba(255, 255, 255, 0.2), inset 0 -2px 4px rgba(0, 0, 0, 0.2);
         }
 
         .number-grid .number.dan {
-            border: 3px solid #f1c40f;
-            background-color: #fff9e6;
+            border: 3px solid var(--dan-border-color);
+            background: linear-gradient(145deg, #fff9e6, #fff3cd);
+            box-shadow: 0 2px 8px rgba(241, 196, 15, 0.25);
+        }
+
+        .number-grid .number.dan.selected {
+            border: 3px solid var(--dan-border-color);
+            background: linear-gradient(145deg, #fff9e6, #fff3cd);
+            box-shadow: 0 2px 8px rgba(241, 196, 15, 0.25);
+            color: #333;
         }
 
         .number-grid .number.filtered {
-            background-color: #ff9800;
+            background: linear-gradient(135deg, #ff9800, #f57c00);
             text-decoration: line-through;
             color: white;
+            border-color: transparent;
         }
 
         /* 胆拖开关 */
@@ -130,16 +424,17 @@
             align-items: center;
             justify-content: center;
             flex: 1;
-            background-color: white;
-            padding: 10px;
-            border-radius: 10px;
+            background: var(--card-gradient);
+            padding: 15px;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
         }
 
         .switch {
             position: relative;
             display: inline-block;
-            width: 50px;
-            height: 26px;
+            width: 54px;
+            height: 28px;
             margin-right: 10px;
         }
 
@@ -156,108 +451,196 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background-color: #ccc;
+            background: linear-gradient(135deg, #ccc, #999);
             transition: .4s;
-            border-radius: 26px;
+            border-radius: 28px;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.08);
         }
 
         .slider:before {
             position: absolute;
             content: "";
-            height: 20px;
-            width: 20px;
+            height: 22px;
+            width: 22px;
             left: 3px;
             bottom: 3px;
-            background-color: white;
+            background: linear-gradient(135deg, #fff, #f0f0f0);
             transition: .4s;
             border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
         }
 
         input:checked + .slider {
-            background-color: #e74c3c;
+            background: var(--primary-gradient);
+            box-shadow: 0 2px 8px rgba(231, 76, 60, 0.25);
         }
 
         input:checked + .slider:before {
-            transform: translateX(24px);
+            transform: translateX(26px);
         }
 
         .switch-label {
-            font-size: 16px;
-            color: #333;
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-color);
         }
 
         /* 按钮区域 */
         .button-area {
             display: flex;
-            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 10px;
             margin-bottom: 15px;
         }
 
         .button-area button {
             flex: 1;
-            margin: 0 5px;
-            padding: 12px;
+            min-width: 120px;
+            padding: 14px 16px;
             border: none;
-            border-radius: 5px;
-            font-size: 16px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+        }
+
+        .button-area button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .button-area button:active {
+            transform: translateY(-1px);
         }
 
         .button-area .random-one {
-            background-color: #3498db;
+            background: var(--primary-gradient);
             color: white;
         }
 
         .button-area .random-five {
-            background-color: #2ecc71;
+            background: var(--primary-gradient);
             color: white;
         }
 
         .button-area .copy {
-            background-color: #f39c12;
-            color: white;
-        }
-
-        .button-area .add-friend {
-            background-color: #9b59b6;
+            background: var(--blue-gradient);
             color: white;
         }
 
         /* 结果显示区域 */
         .result-area {
-            background-color: white;
-            padding: 15px;
-            border-radius: 10px;
+            background: var(--card-gradient);
+            padding: 18px;
+            border-radius: 15px;
             margin-bottom: 0;
-            min-height: 180px;
+            min-height: 160px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
         }
 
         .result-area .result {
-            font-size: 18px;
-            color: #333;
+            font-size: 16px;
+            color: var(--text-color);
             text-align: center;
             margin-bottom: 10px;
+            line-height: 1.6;
         }
 
-        .result-area .result span {
-            color: #e74c3c;
-            font-weight: bold;
+        .result-area .result .ball-container {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .result-area .result .ball {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 600;
+            color: white;
+            position: relative;
+        }
+
+        .result-area .result .red-ball {
+            background: linear-gradient(145deg, var(--red-ball-color), var(--red-ball-dark));
+            box-shadow: 0 3px 8px rgba(231, 76, 60, 0.3), inset 0 2px 4px rgba(255, 255, 255, 0.2), inset 0 -2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .result-area .result .blue-ball {
+            background: linear-gradient(145deg, var(--blue-ball-color), var(--blue-ball-dark));
+            box-shadow: 0 3px 8px rgba(52, 152, 219, 0.3), inset 0 2px 4px rgba(255, 255, 255, 0.2), inset 0 -2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .result-area .result .separator {
+            color: var(--text-color);
+            font-weight: 600;
+            margin: 0 4px;
+        }
+
+        .result-area .result .group-separator {
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #ddd, transparent);
+            margin: 15px 0;
+        }
+
+        .result-area .result .group-label {
+            font-size: 13px;
+            color: #666;
+            margin-right: 10px;
+            font-weight: 600;
+            flex-shrink: 0;
+            min-width: 50px;
+        }
+
+        .result-area .result .group-wrapper {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+
+        .result-area .result .group-wrapper.no-label .group-label {
+            visibility: hidden;
         }
 
         .result-area .result-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 10px;
+            gap: 12px;
             margin-top: 10px;
         }
 
         .result-area .result-card {
-            background-color: #f8f9fa;
-            padding: 15px;
-            border-radius: 8px;
-            border: 1px solid #e74c3c;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            background: linear-gradient(145deg, #f8f9fa, #e9ecef);
+            padding: 14px;
+            border-radius: 10px;
+            border: 2px solid transparent;
+            background: linear-gradient(white, white) padding-box, var(--primary-gradient) border-box;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .result-area .result-card .ball-container {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .result-area .result-card .label {
+            font-size: 13px;
+            color: var(--text-color);
+            margin-bottom: 8px;
+            font-weight: 600;
         }
 
         .result-area .close-btn {
@@ -266,6 +649,30 @@
 
         /* 手机端优化 */
         @media (max-width: 480px) {
+            .header {
+                padding: 12px;
+            }
+
+            .logo {
+                width: 45px;
+                height: 45px;
+            }
+
+            .title {
+                font-size: 20px;
+            }
+
+            .add-friend-header {
+                padding: 8px 14px;
+                font-size: 13px;
+            }
+
+            .lottery-type button {
+                padding: 6px 8px;
+                font-size: 12px;
+                min-width: 45px;
+            }
+
             .result-area .result-grid {
                 grid-template-columns: repeat(2, 1fr);
                 gap: 8px;
@@ -273,21 +680,26 @@
 
             .result-area .result-card {
                 padding: 10px;
-                font-size: 14px;
+                font-size: 13px;
             }
 
             .result-area .result {
-                font-size: 16px;
+                font-size: 15px;
             }
 
             .number-grid .number {
-                width: 36px;
-                height: 36px;
-                font-size: 16px;
+                width: 38px;
+                height: 38px;
+                font-size: 15px;
             }
 
             .number-grid {
-                gap: 6px;
+                gap: 8px;
+            }
+
+            .button-area button {
+                padding: 12px 14px;
+                font-size: 14px;
             }
         }
 
@@ -299,10 +711,11 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
+            background: rgba(0, 0, 0, 0.5);
             align-items: center;
             justify-content: center;
             z-index: 1000;
+            backdrop-filter: blur(5px);
         }
 
         .modal.show {
@@ -310,365 +723,477 @@
         }
 
         .modal-content {
-            background-color: white;
-            padding: 20px;
-            border-radius: 10px;
+            background: var(--card-gradient);
+            padding: 25px;
+            border-radius: 20px;
             text-align: center;
-            max-width: 80%;
+            max-width: 85%;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9) translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
         }
 
         .modal-content h3 {
-            margin-bottom: 15px;
-            color: #333;
+            margin-bottom: 18px;
+            color: var(--text-color);
+            font-size: 18px;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .modal-content img {
             width: 200px;
             height: 200px;
             margin-bottom: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
         }
 
         .modal-content p {
-            color: #666;
-            margin-bottom: 15px;
+            margin-bottom: 22px;
+            color: var(--text-color);
+            font-size: 14px;
+            line-height: 1.6;
         }
 
         .modal-content button {
-            padding: 10px 20px;
-            background-color: #e74c3c;
+            background: var(--wechat-gradient);
             color: white;
             border: none;
-            border-radius: 5px;
-            font-size: 16px;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 15px;
+            font-weight: 600;
             cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(7, 193, 96, 0.25);
+        }
+
+        .modal-content button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(7, 193, 96, 0.3);
         }
     </style>
 </head>
 <body>
-    <!-- 标题 -->
-    <div class="title">幸运选号助手888</div>
+    <div class="header">
+        <div class="header-left">
+            <div class="logo">
+                <div class="logo-icon"></div>
+            </div>
+            <h1 class="title">幸运选号助手888</h1>
+        </div>
+        <div class="header-right">
+            <button class="add-friend-header" onclick="openQRCode()">加好友</button>
+        </div>
+    </div>
 
-    <!-- 彩票类型选择 -->
     <div class="lottery-type">
-        <button class="active" onclick="selectLotteryType('ssq')">双色球</button>
-        <button onclick="selectLotteryType('dlt')">大乐透</button>
-        <button onclick="selectLotteryType('3d')">3D</button>
-        <button onclick="selectLotteryType('qxc')">七星彩</button>
-        <button onclick="selectLotteryType('pl3')">排列3</button>
-        <button onclick="selectLotteryType('pl5')">排列5</button>
-        <button onclick="selectLotteryType('kl8')">快乐8</button>
+        <button class="active" data-type="ssq">双色球</button>
+        <button data-type="dlt">大乐透</button>
+        <button data-type="3d">3D</button>
+        <button data-type="qxc">七星彩</button>
+        <button data-type="pl3">排列3</button>
+        <button data-type="pl5">排列5</button>
+        <button data-type="kl8">快乐8</button>
     </div>
 
-    <!-- 选号区域 -->
-    <div class="number-area" id="numberArea">
-        <!-- 动态生成选号区域 -->
-    </div>
-
-    <!-- 胆拖和过滤开关 -->
     <div class="switch-row">
         <div class="switch-area">
             <label class="switch">
-                <input type="checkbox" id="胆拖开关" onchange="toggle胆拖()">
+                <input type="checkbox" id="danTuoSwitch">
                 <span class="slider"></span>
             </label>
-            <span class="switch-label">胆拖模式</span>
+            <span class="switch-label">胆拖</span>
         </div>
         <div class="switch-area">
             <label class="switch">
-                <input type="checkbox" id="过滤开关" onchange="toggle过滤()">
+                <input type="checkbox" id="filterSwitch">
                 <span class="slider"></span>
             </label>
-            <span class="switch-label">过滤模式</span>
+            <span class="switch-label">过滤</span>
         </div>
     </div>
 
-    <!-- 按钮区域 -->
+    <div class="number-area">
+        <div class="red-area">
+            <h3 class="area-title">红球区</h3>
+            <div class="number-grid" id="redNumberGrid"></div>
+        </div>
+        <div class="blue-area" id="blueArea">
+            <h3 class="area-title">蓝球区</h3>
+            <div class="number-grid" id="blueNumberGrid"></div>
+        </div>
+        <div class="position-area" id="positionArea" style="display: none;">
+            <h3 class="area-title">选号区</h3>
+            <div id="positionGrid"></div>
+        </div>
+    </div>
+
     <div class="button-area">
         <button class="random-one" onclick="randomOne()">机选一注</button>
         <button class="random-five" onclick="randomFive()">机选五注</button>
         <button class="copy" onclick="copyNumbers()">复制号码</button>
-        <button class="add-friend" onclick="showQRCode()">加好友</button>
     </div>
 
-    <!-- 结果显示区域 -->
     <div class="result-area">
-        <div id="result">请选择号码或机选</div>
+        <div class="result" id="result">请选择号码或点击"机选一注"</div>
+        <button class="close-btn" onclick="closeResult()">关闭</button>
     </div>
 
-    <!-- 二维码弹窗 -->
-    <div class="modal" id="modal">
+    <div class="modal" id="qrcodeModal">
         <div class="modal-content">
-            <h3>扫码添加好友</h3>
-            <img src="https://via.placeholder.com/200" alt="微信二维码">
+            <h3>添加微信好友</h3>
+            <img src="data:image/svg+xml,%3Csvg width='200' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='200' height='200' fill='%23f5f5f5'/%3E%3Ctext x='50%25' y='45%25' font-size='14' text-anchor='middle' dominant-baseline='middle' fill='%23333'%3E微信二维码%3C/text%3E%3Ctext x='50%25' y='55%25' font-size='12' text-anchor='middle' dominant-baseline='middle' fill='%23666'%3E优化版预览%3C/text%3E%3C/svg%3E" alt="微信二维码">
             <p>长按识别二维码添加好友</p>
-            <button onclick="closeModal()">关闭</button>
+            <button onclick="closeQRCode()">关闭</button>
         </div>
     </div>
 
     <script>
-        // 当前选择的彩票类型
-        let currentLotteryType = 'ssq';
-
-        // 选中的号码
-        let selectedNumbers = [];
-
-        // 胆拖模式
-        let is胆拖Mode = false;
-
-        // 胆码
-        let danNumbers = [];
-
-        // 过滤模式
-        let is过滤Mode = false;
-
-        // 过滤号码
-        let filteredNumbers = [];
-
-        // 彩票类型配置
         const lotteryConfig = {
-            ssq: {
-                name: '双色球',
-                redCount: 6,
-                redMax: 33,
-                blueCount: 1,
-                blueMax: 16,
-                numberFormat: 'twoDigit'
-            },
-            dlt: {
-                name: '大乐透',
-                redCount: 5,
-                redMax: 35,
-                blueCount: 2,
-                blueMax: 12,
-                numberFormat: 'twoDigit'
-            },
-            '3d': {
-                name: '3D',
-                redCount: 3,
-                redMax: 9,
-                blueCount: 0,
-                blueMax: 0,
-                numberFormat: 'oneDigit'
-            },
-            qxc: {
-                name: '七星彩',
-                redCount: 6,
-                redMax: 9,
-                blueCount: 1,
-                blueMax: 14,
-                numberFormat: 'oneDigit'
-            },
-            pl3: {
-                name: '排列3',
-                redCount: 3,
-                redMax: 9,
-                blueCount: 0,
-                blueMax: 0,
-                numberFormat: 'oneDigit'
-            },
-            pl5: {
-                name: '排列5',
-                redCount: 5,
-                redMax: 9,
-                blueCount: 0,
-                blueMax: 0,
-                numberFormat: 'oneDigit'
-            },
-            kl8: {
-                name: '快乐8',
-                redCount: 10,
-                redMax: 80,
-                blueCount: 0,
-                blueMax: 0,
-                numberFormat: 'twoDigit'
-            }
+            ssq: { name: '双色球', redCount: 6, redRange: 33, blueCount: 1, blueRange: 16, numberFormat: 'twoDigit' },
+            dlt: { name: '大乐透', redCount: 5, redRange: 35, blueCount: 2, blueRange: 12, numberFormat: 'twoDigit' },
+            '3d': { name: '3D', redCount: 3, redRange: 10, blueCount: 0, blueRange: 0, numberFormat: 'oneDigit', startFromZero: true },
+            qxc: { name: '七星彩', redCount: 6, redRange: 10, blueCount: 1, blueRange: 15, numberFormat: 'oneDigit', startFromZero: true, isPositionBased: true },
+            pl3: { name: '排列3', redCount: 3, redRange: 10, blueCount: 0, blueRange: 0, numberFormat: 'oneDigit', startFromZero: true },
+            pl5: { name: '排列5', redCount: 5, redRange: 10, blueCount: 0, blueRange: 0, numberFormat: 'oneDigit', startFromZero: true },
+            kl8: { name: '快乐8', redCount: 10, redRange: 80, blueCount: 0, blueRange: 0, numberFormat: 'twoDigit' }
         };
 
-        // 切换胆拖模式
-        function toggle胆拖() {
-            is胆拖Mode = document.getElementById('胆拖开关').checked;
-            
-            if (is胆拖Mode) {
-                // 打开胆拖模式，关闭过滤模式
-                is过滤Mode = false;
-                document.getElementById('过滤开关').checked = false;
-                // 不清空过滤号码，保留状态
-            } else {
-                // 关闭胆拖模式，清空胆码
-                danNumbers = [];
-            }
-            
-            // 重新生成选号区域
+        let currentLotteryType = 'ssq';
+        let selectedNumbers = [];
+        let danNumbers = [];
+        let filteredNumbers = [];
+        let isDanTuoMode = false;
+        let isFilterMode = false;
+
+        function init() {
+            updateLotteryTypeButtons();
             generateNumberArea();
             updateResult();
         }
 
-        // 切换过滤模式
-        function toggle过滤() {
-            is过滤Mode = document.getElementById('过滤开关').checked;
-            
-            if (is过滤Mode) {
-                // 打开过滤模式，关闭胆拖模式
-                is胆拖Mode = false;
-                document.getElementById('胆拖开关').checked = false;
-                // 不清空胆码，保留状态
-            } else {
-                // 关闭过滤模式，清空过滤号码
-                filteredNumbers = [];
-            }
-            
-            // 重新生成选号区域
-            generateNumberArea();
-            updateResult();
-        }
-
-        // 选择彩票类型
-        function selectLotteryType(type) {
-            currentLotteryType = type;
-            selectedNumbers = [];
-            danNumbers = [];
-            filteredNumbers = [];
-
-            // 更新按钮样式
+        function updateLotteryTypeButtons() {
             const buttons = document.querySelectorAll('.lottery-type button');
             buttons.forEach(button => {
-                button.classList.remove('active');
+                if (button.dataset.type === currentLotteryType) {
+                    button.classList.add('active');
+                } else {
+                    button.classList.remove('active');
+                }
             });
-            event.target.classList.add('active');
+        }
 
-            // 重新生成选号区域
+        document.querySelectorAll('.lottery-type button').forEach(button => {
+            button.addEventListener('click', function() {
+                currentLotteryType = this.dataset.type;
+                selectedNumbers = [];
+                danNumbers = [];
+                filteredNumbers = [];
+                updateLotteryTypeButtons();
+                generateNumberArea();
+                updateResult();
+            });
+        });
+
+        function generateNumberArea() {
+            const config = lotteryConfig[currentLotteryType];
+            const redGrid = document.getElementById('redNumberGrid');
+            const blueGrid = document.getElementById('blueNumberGrid');
+            const blueArea = document.getElementById('blueArea');
+            const redArea = document.querySelector('.red-area');
+            const positionArea = document.getElementById('positionArea');
+            const positionGrid = document.getElementById('positionGrid');
+
+            redGrid.innerHTML = '';
+            blueGrid.innerHTML = '';
+            positionGrid.innerHTML = '';
+
+            if (config.isPositionBased) {
+                redArea.style.display = 'none';
+                blueArea.style.display = 'none';
+                positionArea.style.display = 'block';
+
+                for (let pos = 1; pos <= config.redCount; pos++) {
+                    const row = document.createElement('div');
+                    row.className = 'position-row';
+
+                    const label = document.createElement('div');
+                    label.className = 'position-label';
+                    label.textContent = `第${pos}位`;
+                    row.appendChild(label);
+
+                    const numbersDiv = document.createElement('div');
+                    numbersDiv.className = 'position-numbers';
+
+                    for (let i = 0; i < config.redRange; i++) {
+                        const number = document.createElement('div');
+                        number.className = 'number';
+                        number.dataset.number = i;
+                        number.dataset.type = 'red';
+                        number.dataset.position = pos;
+
+                        if (danNumbers.some(n => n.number === i && n.type === 'red' && n.position === pos)) {
+                            number.classList.add('dan');
+                        }
+
+                        if (filteredNumbers.some(n => n.number === i && n.type === 'red' && n.position === pos)) {
+                            number.classList.add('filtered');
+                        }
+
+                        if (selectedNumbers.some(n => n.number === i && n.type === 'red' && n.position === pos)) {
+                            number.classList.add('selected');
+                        }
+
+                        number.textContent = i;
+                        number.addEventListener('click', function() {
+                            toggleNumber(i, 'red', pos);
+                        });
+                        numbersDiv.appendChild(number);
+                    }
+
+                    row.appendChild(numbersDiv);
+                    positionGrid.appendChild(row);
+                }
+
+                if (config.blueCount > 0) {
+                    const row = document.createElement('div');
+                    row.className = 'position-row';
+
+                    const label = document.createElement('div');
+                    label.className = 'position-label';
+                    label.textContent = '后区';
+                    row.appendChild(label);
+
+                    const numbersDiv = document.createElement('div');
+                    numbersDiv.className = 'position-numbers';
+
+                    for (let i = 0; i < config.blueRange; i++) {
+                        const number = document.createElement('div');
+                        number.className = 'number';
+                        number.dataset.number = i;
+                        number.dataset.type = 'blue';
+                        number.dataset.position = config.redCount + 1;
+
+                        if (danNumbers.some(n => n.number === i && n.type === 'blue')) {
+                            number.classList.add('dan');
+                        }
+
+                        if (filteredNumbers.some(n => n.number === i && n.type === 'blue')) {
+                            number.classList.add('filtered');
+                        }
+
+                        if (selectedNumbers.some(n => n.number === i && n.type === 'blue')) {
+                            number.classList.add('selected');
+                        }
+
+                        number.textContent = i;
+                        number.addEventListener('click', function() {
+                            toggleNumber(i, 'blue', config.redCount + 1);
+                        });
+                        numbersDiv.appendChild(number);
+                    }
+
+                    row.appendChild(numbersDiv);
+                    positionGrid.appendChild(row);
+                }
+            } else {
+                redArea.style.display = 'block';
+                positionArea.style.display = 'none';
+
+                if (config.blueCount > 0) {
+                    blueArea.style.display = 'block';
+                } else {
+                    blueArea.style.display = 'none';
+                }
+
+                const startNum = config.startFromZero ? 0 : 1;
+
+                for (let i = startNum; i < startNum + config.redRange; i++) {
+                    const number = document.createElement('div');
+                    number.className = 'number';
+                    number.dataset.number = i;
+                    number.dataset.type = 'red';
+
+                    if (danNumbers.some(n => n.number === i && n.type === 'red')) {
+                        number.classList.add('dan');
+                    }
+
+                    if (filteredNumbers.some(n => n.number === i && n.type === 'red')) {
+                        number.classList.add('filtered');
+                    }
+
+                    if (selectedNumbers.some(n => n.number === i && n.type === 'red')) {
+                        number.classList.add('selected');
+                    }
+
+                    number.textContent = config.numberFormat === 'oneDigit' ? i : (i < 10 ? '0' + i : i);
+                    number.addEventListener('click', function() {
+                        toggleNumber(i, 'red');
+                    });
+                    redGrid.appendChild(number);
+                }
+
+                if (config.blueCount > 0) {
+                    for (let i = startNum; i < startNum + config.blueRange; i++) {
+                        const number = document.createElement('div');
+                        number.className = 'number';
+                        number.dataset.number = i;
+                        number.dataset.type = 'blue';
+
+                        if (danNumbers.some(n => n.number === i && n.type === 'blue')) {
+                            number.classList.add('dan');
+                        }
+
+                        if (filteredNumbers.some(n => n.number === i && n.type === 'blue')) {
+                            number.classList.add('filtered');
+                        }
+
+                        if (selectedNumbers.some(n => n.number === i && n.type === 'blue')) {
+                            number.classList.add('selected');
+                        }
+
+                        number.textContent = config.numberFormat === 'oneDigit' ? i : (i < 10 ? '0' + i : i);
+                        number.addEventListener('click', function() {
+                            toggleNumber(i, 'blue');
+                        });
+                        blueGrid.appendChild(number);
+                    }
+                }
+            }
+        }
+
+        function toggleNumber(number, type, position) {
+            const config = lotteryConfig[currentLotteryType];
+            const isRed = type === 'red';
+            const maxCount = isRed ? config.redCount : config.blueCount;
+            const currentCount = selectedNumbers.filter(n => n.type === type).length;
+            const currentDanCount = danNumbers.filter(n => n.type === type).length;
+
+            if (config.isPositionBased && position !== undefined) {
+                if (isDanTuoMode) {
+                    const isDan = danNumbers.some(n => n.number === number && n.type === type && n.position === position);
+                    if (isDan) {
+                        danNumbers = danNumbers.filter(n => !(n.number === number && n.type === type && n.position === position));
+                    } else {
+                        danNumbers.push({ number, type, position });
+                    }
+                    generateNumberArea();
+                    return;
+                }
+
+                if (isFilterMode) {
+                    const isFiltered = filteredNumbers.some(n => n.number === number && n.type === type && n.position === position);
+                    if (isFiltered) {
+                        filteredNumbers = filteredNumbers.filter(n => !(n.number === number && n.type === type && n.position === position));
+                    } else {
+                        filteredNumbers.push({ number, type, position });
+                    }
+                    generateNumberArea();
+                    return;
+                }
+
+                const isSelected = selectedNumbers.some(n => n.number === number && n.type === type && n.position === position);
+                if (isSelected) {
+                    selectedNumbers = selectedNumbers.filter(n => !(n.number === number && n.type === type && n.position === position));
+                } else {
+                    const existingInPosition = selectedNumbers.some(n => n.type === type && n.position === position);
+                    if (existingInPosition) {
+                        selectedNumbers = selectedNumbers.filter(n => !(n.type === type && n.position === position));
+                    }
+                    selectedNumbers.push({ number, type, position });
+                }
+                generateNumberArea();
+                updateResult();
+                return;
+            }
+
+            if (isDanTuoMode) {
+                const isDan = danNumbers.some(n => n.number === number && n.type === type);
+                if (isDan) {
+                    danNumbers = danNumbers.filter(n => !(n.number === number && n.type === type));
+                } else {
+                    if (currentDanCount >= maxCount - 1) {
+                        alert(`胆码数量不能超过${maxCount - 1}个`);
+                        return;
+                    }
+                    danNumbers.push({ number, type });
+                }
+                generateNumberArea();
+                return;
+            }
+
+            if (isFilterMode) {
+                const isFiltered = filteredNumbers.some(n => n.number === number && n.type === type);
+                if (isFiltered) {
+                    filteredNumbers = filteredNumbers.filter(n => !(n.number === number && n.type === type));
+                } else {
+                    filteredNumbers.push({ number, type });
+                }
+                generateNumberArea();
+                return;
+            }
+
+            const isSelected = selectedNumbers.some(n => n.number === number && n.type === type);
+            if (isSelected) {
+                selectedNumbers = selectedNumbers.filter(n => !(n.number === number && n.type === type));
+            } else {
+                if (currentCount >= maxCount) {
+                    alert(`最多只能选择${maxCount}个${isRed ? '红球' : '蓝球'}`);
+                    return;
+                }
+                selectedNumbers.push({ number, type });
+            }
             generateNumberArea();
             updateResult();
         }
 
-        // 生成选号区域
-        function generateNumberArea() {
-            const config = lotteryConfig[currentLotteryType];
-            const numberArea = document.getElementById('numberArea');
-            let html = '';
-
-            // 红球区域
-            if (config.redCount > 0) {
-                html += '<div class="area-title">红球（选' + config.redCount + '个）</div>';
-                html += '<div class="number-grid">';
-                const redStart = config.numberFormat === 'oneDigit' ? 0 : 1;
-                for (let i = redStart; i <= config.redMax; i++) {
-                    const num = config.numberFormat === 'oneDigit' ? i : (i < 10 ? '0' + i : i);
-                    const isDan = danNumbers.some(n => n.number === i && n.type === 'red');
-                    const isFiltered = filteredNumbers.some(n => n.number === i && n.type === 'red');
-                    const danClass = isDan ? ' dan' : '';
-                    const filteredClass = isFiltered ? ' filtered' : '';
-                    html += '<div class="number' + danClass + filteredClass + '" onclick="toggleNumber(this, ' + i + ', \'red\')">' + num + '</div>';
-                }
-                html += '</div>';
-            }
-
-            // 蓝球区域
-            if (config.blueCount > 0) {
-                html += '<div class="area-title">蓝球（选' + config.blueCount + '个）</div>';
-                html += '<div class="number-grid">';
-                const blueStart = config.numberFormat === 'oneDigit' ? 0 : 1;
-                for (let i = blueStart; i <= config.blueMax; i++) {
-                    const num = config.numberFormat === 'oneDigit' ? i : (i < 10 ? '0' + i : i);
-                    const isDan = danNumbers.some(n => n.number === i && n.type === 'blue');
-                    const isFiltered = filteredNumbers.some(n => n.number === i && n.type === 'blue');
-                    const danClass = isDan ? ' dan' : '';
-                    const filteredClass = isFiltered ? ' filtered' : '';
-                    html += '<div class="number' + danClass + filteredClass + '" onclick="toggleNumber(this, ' + i + ', \'blue\')">' + num + '</div>';
-                }
-                html += '</div>';
-            }
-
-            numberArea.innerHTML = html;
-        }
-
-        // 切换号码选中状态
-        function toggleNumber(element, number, type) {
-            const config = lotteryConfig[currentLotteryType];
-
-            if (is胆拖Mode) {
-                // 胆拖模式
-                const danIndex = danNumbers.findIndex(n => n.number === number && n.type === type);
-                const filterIndex = filteredNumbers.findIndex(n => n.number === number && n.type === type);
-
-                if (danIndex > -1) {
-                    // 取消胆码
-                    danNumbers.splice(danIndex, 1);
-                    element.classList.remove('dan');
-                } else if (filterIndex > -1) {
-                    // 从过滤号码转为胆码
-                    filteredNumbers.splice(filterIndex, 1);
-                    element.classList.remove('filtered');
-                    danNumbers.push({ number, type });
-                    element.classList.add('dan');
-                } else {
-                    // 检查胆码数量是否超过限制
-                    const danCount = danNumbers.filter(n => n.type === type).length;
-                    const maxCount = type === 'red' ? config.redCount : config.blueCount;
-
-                    if (danCount >= maxCount - 1) {
-                        alert(type === 'red' ? '胆码最多选' + (maxCount - 1) + '个' : '胆码最多选' + (maxCount - 1) + '个');
-                        return;
-                    }
-
-                    // 设为胆码
-                    danNumbers.push({ number, type });
-                    element.classList.add('dan');
-                }
-            } else if (is过滤Mode) {
-                // 过滤模式
-                const filterIndex = filteredNumbers.findIndex(n => n.number === number && n.type === type);
-                const danIndex = danNumbers.findIndex(n => n.number === number && n.type === type);
-
-                if (filterIndex > -1) {
-                    // 取消过滤
-                    filteredNumbers.splice(filterIndex, 1);
-                    element.classList.remove('filtered');
-                } else if (danIndex > -1) {
-                    // 从胆码转为过滤号码
-                    danNumbers.splice(danIndex, 1);
-                    element.classList.remove('dan');
-                    filteredNumbers.push({ number, type });
-                    element.classList.add('filtered');
-                } else {
-                    // 设为过滤号码
-                    filteredNumbers.push({ number, type });
-                    element.classList.add('filtered');
-                }
-            } else {
-                // 普通模式
-                const index = selectedNumbers.findIndex(n => n.number === number && n.type === type);
-
-                if (index > -1) {
-                    // 取消选中
-                    selectedNumbers.splice(index, 1);
-                    element.classList.remove('selected');
-                } else {
-                    // 检查是否超过限制
-                    const count = selectedNumbers.filter(n => n.type === type).length;
-                    const maxCount = type === 'red' ? config.redCount : config.blueCount;
-
-                    if (count >= maxCount) {
-                        alert(type === 'red' ? '红球最多选' + maxCount + '个' : '蓝球最多选' + maxCount + '个');
-                        return;
-                    }
-
-                    // 选中号码
-                    selectedNumbers.push({ number, type });
-                    element.classList.add('selected');
-                }
-            }
-
-            updateResult();
-        }
-
-        // 更新结果显示
         function updateResult() {
-            const config = lotteryConfig[currentLotteryType];
             const resultDiv = document.getElementById('result');
-
+            const config = lotteryConfig[currentLotteryType];
+            
             if (selectedNumbers.length === 0) {
-                resultDiv.innerHTML = '请选择号码或机选';
+                resultDiv.innerHTML = '请选择号码或点击"机选一注"';
+                return;
+            }
+
+            if (config.isPositionBased) {
+                const redNumbers = selectedNumbers
+                    .filter(n => n.type === 'red')
+                    .sort((a, b) => a.position - b.position);
+
+                const blueNumbers = selectedNumbers
+                    .filter(n => n.type === 'blue');
+
+                let resultHTML = '<div class="group-wrapper no-label"><div class="group-label">第1注</div><div class="ball-container">';
+                
+                redNumbers.forEach(num => {
+                    resultHTML += `<div class="ball red-ball">${num.number}</div>`;
+                });
+                
+                if (redNumbers.length > 0 && blueNumbers.length > 0) {
+                    resultHTML += `<span class="separator">+</span>`;
+                }
+                
+                blueNumbers.forEach(num => {
+                    resultHTML += `<div class="ball blue-ball">${num.number}</div>`;
+                });
+                
+                resultHTML += '</div></div>';
+                resultDiv.innerHTML = resultHTML;
                 return;
             }
 
@@ -682,114 +1207,199 @@
                 .map(n => config.numberFormat === 'oneDigit' ? n.number : (n.number < 10 ? '0' + n.number : n.number))
                 .sort((a, b) => a - b);
 
-            let result = '';
+            let resultHTML = '<div class="group-wrapper no-label"><div class="group-label">第1注</div><div class="ball-container">';
+            
             if (redNumbers.length > 0) {
-                result += redNumbers.join(' ');
+                redNumbers.forEach(num => {
+                    resultHTML += `<div class="ball red-ball">${num}</div>`;
+                });
             }
+            
+            if (redNumbers.length > 0 && blueNumbers.length > 0) {
+                resultHTML += `<span class="separator">+</span>`;
+            }
+            
             if (blueNumbers.length > 0) {
-                result += ' + ' + blueNumbers.join(' ');
+                blueNumbers.forEach(num => {
+                    resultHTML += `<div class="ball blue-ball">${num}</div>`;
+                });
             }
-
-            resultDiv.innerHTML = '<div class="result-card"><span>' + result + '</span></div>';
+            
+            resultHTML += '</div></div>';
+            resultDiv.innerHTML = resultHTML;
         }
 
-        // 机选一注
         function randomOne() {
             const config = lotteryConfig[currentLotteryType];
-            selectedNumbers = [];
+            const newSelected = [];
+            const cycleLimit = 1000;
+            let cycleCount = 0;
 
-            // 获取胆码和过滤号码
-            const redDanNumbers = danNumbers.filter(n => n.type === 'red').map(n => n.number);
-            const blueDanNumbers = danNumbers.filter(n => n.type === 'blue').map(n => n.number);
-            const redFilteredNumbers = filteredNumbers.filter(n => n.type === 'red').map(n => n.number);
-            const blueFilteredNumbers = filteredNumbers.filter(n => n.type === 'blue').map(n => n.number);
-
-            // 红球
-            if (config.redCount > 0) {
-                // 检查胆码数量是否超过限制
-                if (redDanNumbers.length >= config.redCount) {
-                    alert('红球胆码数量不能超过' + (config.redCount - 1) + '个');
-                    return;
-                }
-
-                // 检查可选号码是否足够
-                const redStart = config.numberFormat === 'oneDigit' ? 0 : 1;
-                const totalRedNumbers = config.redMax - redStart + 1;
-                const availableRedNumbers = totalRedNumbers - redDanNumbers.length - redFilteredNumbers.length;
-                if (availableRedNumbers < config.redCount - redDanNumbers.length) {
-                    alert('红球可选号码不足，请减少胆码或过滤号码');
-                    return;
-                }
-
-                const redNumbers = [...redDanNumbers];
-                let attempts = 0;
-                const maxAttempts = 1000;
-                
-                while (redNumbers.length < config.redCount && attempts < maxAttempts) {
-                    const num = Math.floor(Math.random() * (config.redMax - redStart + 1)) + redStart;
-                    if (!redNumbers.includes(num) && !redFilteredNumbers.includes(num)) {
-                        redNumbers.push(num);
+            if (config.isPositionBased) {
+                for (let pos = 1; pos <= config.redCount; pos++) {
+                    const danInPos = danNumbers.find(n => n.type === 'red' && n.position === pos);
+                    if (danInPos) {
+                        newSelected.push(danInPos);
+                        continue;
                     }
-                    attempts++;
+
+                    let num;
+                    let attempts = 0;
+                    do {
+                        num = Math.floor(Math.random() * config.redRange);
+                        attempts++;
+                        if (attempts > cycleLimit) {
+                            console.error('Position ' + pos + ' number generation failed');
+                            break;
+                        }
+                    } while (filteredNumbers.some(n => n.number === num && n.type === 'red' && n.position === pos));
+                    
+                    newSelected.push({ number: num, type: 'red', position: pos });
                 }
 
-                if (redNumbers.length < config.redCount) {
-                    alert('红球选号失败，请减少胆码或过滤号码');
-                    return;
+                if (config.blueCount > 0) {
+                    const danBlue = danNumbers.find(n => n.type === 'blue');
+                    if (danBlue) {
+                        newSelected.push(danBlue);
+                    } else {
+                        let num;
+                        let attempts = 0;
+                        do {
+                            num = Math.floor(Math.random() * config.blueRange);
+                            attempts++;
+                            if (attempts > cycleLimit) {
+                                console.error('Blue number generation failed');
+                                break;
+                            }
+                        } while (filteredNumbers.some(n => n.number === num && n.type === 'blue'));
+                        
+                        newSelected.push({ number: num, type: 'blue', position: config.redCount + 1 });
+                    }
                 }
-                
-                redNumbers.forEach(num => {
-                    selectedNumbers.push({ number: num, type: 'red' });
-                });
+
+                selectedNumbers = newSelected;
+                generateNumberArea();
+                updateResult();
+                return;
             }
 
-            // 蓝球
+            danNumbers.forEach(n => {
+                newSelected.push(n);
+            });
+
+            const redDanCount = newSelected.filter(n => n.type === 'red').length;
+            
+            while (newSelected.filter(n => n.type === 'red').length < config.redCount) {
+                cycleCount++;
+                if (cycleCount > cycleLimit) {
+                    console.error('Red number generation cycle limit reached');
+                    break;
+                }
+                
+                const num = Math.floor(Math.random() * config.redRange) + (config.startFromZero ? 0 : 1);
+                
+                if (danNumbers.some(n => n.number === num && n.type === 'red')) {
+                    continue;
+                }
+                
+                if (filteredNumbers.some(n => n.number === num && n.type === 'red')) {
+                    continue;
+                }
+                
+                if (newSelected.some(n => n.number === num && n.type === 'red')) {
+                    continue;
+                }
+                
+                newSelected.push({ number: num, type: 'red' });
+            }
+
             if (config.blueCount > 0) {
-                // 检查胆码数量是否超过限制
-                if (blueDanNumbers.length >= config.blueCount) {
-                    alert('蓝球胆码数量不能超过' + (config.blueCount - 1) + '个');
-                    return;
-                }
-
-                // 检查可选号码是否足够
-                const blueStart = config.numberFormat === 'oneDigit' ? 0 : 1;
-                const totalBlueNumbers = config.blueMax - blueStart + 1;
-                const availableBlueNumbers = totalBlueNumbers - blueDanNumbers.length - blueFilteredNumbers.length;
-                if (availableBlueNumbers < config.blueCount - blueDanNumbers.length) {
-                    alert('蓝球可选号码不足，请减少胆码或过滤号码');
-                    return;
-                }
-
-                const blueNumbers = [...blueDanNumbers];
-                let attempts = 0;
-                const maxAttempts = 1000;
+                const blueDanCount = newSelected.filter(n => n.type === 'blue').length;
                 
-                while (blueNumbers.length < config.blueCount && attempts < maxAttempts) {
-                    const num = Math.floor(Math.random() * (config.blueMax - blueStart + 1)) + blueStart;
-                    if (!blueNumbers.includes(num) && !blueFilteredNumbers.includes(num)) {
-                        blueNumbers.push(num);
+                while (newSelected.filter(n => n.type === 'blue').length < config.blueCount) {
+                    cycleCount++;
+                    if (cycleCount > cycleLimit) {
+                        console.error('Blue number generation cycle limit reached');
+                        break;
                     }
-                    attempts++;
+                    
+                    const num = Math.floor(Math.random() * config.blueRange) + (config.startFromZero ? 0 : 1);
+                    
+                    if (danNumbers.some(n => n.number === num && n.type === 'blue')) {
+                        continue;
+                    }
+                    
+                    if (filteredNumbers.some(n => n.number === num && n.type === 'blue')) {
+                        continue;
+                    }
+                    
+                    if (newSelected.some(n => n.number === num && n.type === 'blue')) {
+                        continue;
+                    }
+                    
+                    newSelected.push({ number: num, type: 'blue' });
                 }
-
-                if (blueNumbers.length < config.blueCount) {
-                    alert('蓝球选号失败，请减少胆码或过滤号码');
-                    return;
-                }
-                
-                blueNumbers.forEach(num => {
-                    selectedNumbers.push({ number: num, type: 'blue' });
-                });
             }
 
-            // 更新界面
+            selectedNumbers = newSelected;
             generateNumberArea();
             updateResult();
         }
 
-        // 机选五注
         function randomFive() {
+            const config = lotteryConfig[currentLotteryType];
             let results = [];
+            const cycleLimit = 1000;
+            
+            if (config.isPositionBased) {
+                for (let i = 0; i < 5; i++) {
+                    let resultHTML = '<div class="group-wrapper"><div class="group-label">第' + (i + 1) + '注</div><div class="ball-container">';
+                    
+                    for (let pos = 1; pos <= config.redCount; pos++) {
+                        const danInPos = danNumbers.find(n => n.type === 'red' && n.position === pos);
+                        let num;
+                        if (danInPos) {
+                            num = danInPos.number;
+                        } else {
+                            let attempts = 0;
+                            do {
+                                num = Math.floor(Math.random() * config.redRange);
+                                attempts++;
+                                if (attempts > cycleLimit) break;
+                            } while (filteredNumbers.some(n => n.number === num && n.type === 'red' && n.position === pos));
+                        }
+                        resultHTML += `<div class="ball red-ball">${num}</div>`;
+                    }
+                    
+                    if (config.blueCount > 0) {
+                        resultHTML += `<span class="separator">+</span>`;
+                        const danBlue = danNumbers.find(n => n.type === 'blue');
+                        let num;
+                        if (danBlue) {
+                            num = danBlue.number;
+                        } else {
+                            let attempts = 0;
+                            do {
+                                num = Math.floor(Math.random() * config.blueRange);
+                                attempts++;
+                                if (attempts > cycleLimit) break;
+                            } while (filteredNumbers.some(n => n.number === num && n.type === 'blue'));
+                        }
+                        resultHTML += `<div class="ball blue-ball">${num}</div>`;
+                    }
+                    
+                    resultHTML += '</div></div>';
+                    results.push(resultHTML);
+                }
+                
+                selectedNumbers = [];
+                generateNumberArea();
+                
+                const resultDiv = document.getElementById('result');
+                resultDiv.innerHTML = results.join('<div class="group-separator"></div>');
+                return;
+            }
+            
             for (let i = 0; i < 5; i++) {
                 randomOne();
                 const config = lotteryConfig[currentLotteryType];
@@ -803,64 +1413,99 @@
                     .map(n => config.numberFormat === 'oneDigit' ? n.number : (n.number < 10 ? '0' + n.number : n.number))
                     .sort((a, b) => a - b);
 
-                let result = '';
+                let resultHTML = '<div class="group-wrapper"><div class="group-label">第' + (i + 1) + '注</div><div class="ball-container">';
+                
                 if (redNumbers.length > 0) {
-                    result += redNumbers.join(' ');
+                    redNumbers.forEach(num => {
+                        resultHTML += `<div class="ball red-ball">${num}</div>`;
+                    });
                 }
+                
+                if (redNumbers.length > 0 && blueNumbers.length > 0) {
+                    resultHTML += `<span class="separator">+</span>`;
+                }
+                
                 if (blueNumbers.length > 0) {
-                    result += ' + ' + blueNumbers.join(' ');
+                    blueNumbers.forEach(num => {
+                        resultHTML += `<div class="ball blue-ball">${num}</div>`;
+                    });
                 }
-                results.push(result);
+                
+                resultHTML += '</div></div>';
+                results.push(resultHTML);
             }
-
-            // 清空选中号码
+            
             selectedNumbers = [];
             generateNumberArea();
-
-            // 显示五注结果
+            
             const resultDiv = document.getElementById('result');
-            resultDiv.innerHTML = '<div class="result-grid">' + results.map((r, i) => '<div class="result-card">第' + (i + 1) + '注：<span>' + r + '</span></div>').join('') + '</div>';
+            resultDiv.innerHTML = results.join('<div class="group-separator"></div>');
         }
 
-        // 复制号码
         function copyNumbers() {
             const resultDiv = document.getElementById('result');
-
-            // 检查是否有结果显示
-            if (resultDiv.innerHTML.includes('请选择号码或机选')) {
+            const config = lotteryConfig[currentLotteryType];
+            
+            if (selectedNumbers.length === 0) {
                 alert('请先选择号码或机选');
                 return;
             }
 
-            // 提取结果显示中的号码
-            const spans = resultDiv.querySelectorAll('span');
-            let results = [];
+            const redNumbers = selectedNumbers
+                .filter(n => n.type === 'red')
+                .map(n => config.numberFormat === 'oneDigit' ? n.number : (n.number < 10 ? '0' + n.number : n.number))
+                .sort((a, b) => a - b);
 
-            spans.forEach(span => {
-                results.push(span.textContent);
-            });
+            const blueNumbers = selectedNumbers
+                .filter(n => n.type === 'blue')
+                .map(n => config.numberFormat === 'oneDigit' ? n.number : (n.number < 10 ? '0' + n.number : n.number))
+                .sort((a, b) => a - b);
 
-            // 复制到剪贴板
-            const textToCopy = results.join('\n');
-            navigator.clipboard.writeText(textToCopy).then(() => {
+            let text = '';
+            if (redNumbers.length > 0) {
+                text += redNumbers.join(' ');
+            }
+            if (blueNumbers.length > 0) {
+                text += ' + ' + blueNumbers.join(' ');
+            }
+
+            navigator.clipboard.writeText(text).then(() => {
                 alert('复制成功！');
-            }).catch(() => {
+            }).catch(err => {
                 alert('复制失败，请手动复制');
+                console.error('复制失败:', err);
             });
         }
 
-        // 显示二维码
-        function showQRCode() {
-            document.getElementById('modal').classList.add('show');
+        function openQRCode() {
+            document.getElementById('qrcodeModal').classList.add('show');
         }
 
-        // 关闭弹窗
-        function closeModal() {
-            document.getElementById('modal').classList.remove('show');
+        function closeQRCode() {
+            document.getElementById('qrcodeModal').classList.remove('show');
         }
 
-        // 初始化
-        generateNumberArea();
+        function closeResult() {
+            document.querySelector('.result-area').style.display = 'none';
+        }
+
+        document.getElementById('danTuoSwitch').addEventListener('change', function() {
+            isDanTuoMode = this.checked;
+            if (isDanTuoMode) {
+                isFilterMode = false;
+                document.getElementById('filterSwitch').checked = false;
+            }
+        });
+
+        document.getElementById('filterSwitch').addEventListener('change', function() {
+            isFilterMode = this.checked;
+            if (isFilterMode) {
+                isDanTuoMode = false;
+                document.getElementById('danTuoSwitch').checked = false;
+            }
+        });
+
+        init();
     </script>
 </body>
 </html>
