@@ -104,6 +104,85 @@
             border-color: #e74c3c;
         }
 
+        .number-grid .number.dan {
+            border: 3px solid #f1c40f;
+            background-color: #fff9e6;
+        }
+
+        .number-grid .number.filtered {
+            background-color: #ff9800;
+            text-decoration: line-through;
+            color: white;
+        }
+
+        /* 胆拖开关 */
+        .switch-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .switch-area {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+            background-color: white;
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 26px;
+            margin-right: 10px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 26px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #e74c3c;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(24px);
+        }
+
+        .switch-label {
+            font-size: 16px;
+            color: #333;
+        }
+
         /* 按钮区域 */
         .button-area {
             display: flex;
@@ -222,12 +301,35 @@
     <!-- 彩票类型选择 -->
     <div class="lottery-type">
         <button class="active" onclick="selectLotteryType('ssq')">双色球</button>
+        <button onclick="selectLotteryType('dlt')">大乐透</button>
         <button onclick="selectLotteryType('3d')">3D</button>
+        <button onclick="selectLotteryType('qxc')">七星彩</button>
+        <button onclick="selectLotteryType('pl3')">排列3</button>
+        <button onclick="selectLotteryType('pl5')">排列5</button>
+        <button onclick="selectLotteryType('kl8')">快乐8</button>
     </div>
 
     <!-- 选号区域 -->
     <div class="number-area" id="numberArea">
         <!-- 动态生成选号区域 -->
+    </div>
+
+    <!-- 胆拖和过滤开关 -->
+    <div class="switch-row">
+        <div class="switch-area">
+            <label class="switch">
+                <input type="checkbox" id="胆拖开关" onchange="toggle胆拖()">
+                <span class="slider"></span>
+            </label>
+            <span class="switch-label">胆拖模式</span>
+        </div>
+        <div class="switch-area">
+            <label class="switch">
+                <input type="checkbox" id="过滤开关" onchange="toggle过滤()">
+                <span class="slider"></span>
+            </label>
+            <span class="switch-label">过滤模式</span>
+        </div>
     </div>
 
     <!-- 按钮区域 -->
@@ -260,6 +362,18 @@
         // 选中的号码
         let selectedNumbers = [];
 
+        // 胆拖模式
+        let is胆拖Mode = false;
+
+        // 胆码
+        let danNumbers = [];
+
+        // 过滤模式
+        let is过滤Mode = false;
+
+        // 过滤号码
+        let filteredNumbers = [];
+
         // 彩票类型配置
         const lotteryConfig = {
             ssq: {
@@ -267,21 +381,103 @@
                 redCount: 6,
                 redMax: 33,
                 blueCount: 1,
-                blueMax: 16
+                blueMax: 16,
+                numberFormat: 'twoDigit'
+            },
+            dlt: {
+                name: '大乐透',
+                redCount: 5,
+                redMax: 35,
+                blueCount: 2,
+                blueMax: 12,
+                numberFormat: 'twoDigit'
             },
             '3d': {
                 name: '3D',
                 redCount: 3,
                 redMax: 9,
                 blueCount: 0,
-                blueMax: 0
+                blueMax: 0,
+                numberFormat: 'oneDigit'
+            },
+            qxc: {
+                name: '七星彩',
+                redCount: 6,
+                redMax: 9,
+                blueCount: 1,
+                blueMax: 14,
+                numberFormat: 'oneDigit'
+            },
+            pl3: {
+                name: '排列3',
+                redCount: 3,
+                redMax: 9,
+                blueCount: 0,
+                blueMax: 0,
+                numberFormat: 'oneDigit'
+            },
+            pl5: {
+                name: '排列5',
+                redCount: 5,
+                redMax: 9,
+                blueCount: 0,
+                blueMax: 0,
+                numberFormat: 'oneDigit'
+            },
+            kl8: {
+                name: '快乐8',
+                redCount: 10,
+                redMax: 80,
+                blueCount: 0,
+                blueMax: 0,
+                numberFormat: 'twoDigit'
             }
         };
+
+        // 切换胆拖模式
+        function toggle胆拖() {
+            is胆拖Mode = document.getElementById('胆拖开关').checked;
+            
+            if (is胆拖Mode) {
+                // 打开胆拖模式，关闭过滤模式
+                is过滤Mode = false;
+                document.getElementById('过滤开关').checked = false;
+                // 不清空过滤号码，保留状态
+            } else {
+                // 关闭胆拖模式，清空胆码
+                danNumbers = [];
+            }
+            
+            // 重新生成选号区域
+            generateNumberArea();
+            updateResult();
+        }
+
+        // 切换过滤模式
+        function toggle过滤() {
+            is过滤Mode = document.getElementById('过滤开关').checked;
+            
+            if (is过滤Mode) {
+                // 打开过滤模式，关闭胆拖模式
+                is胆拖Mode = false;
+                document.getElementById('胆拖开关').checked = false;
+                // 不清空胆码，保留状态
+            } else {
+                // 关闭过滤模式，清空过滤号码
+                filteredNumbers = [];
+            }
+            
+            // 重新生成选号区域
+            generateNumberArea();
+            updateResult();
+        }
 
         // 选择彩票类型
         function selectLotteryType(type) {
             currentLotteryType = type;
             selectedNumbers = [];
+            danNumbers = [];
+            filteredNumbers = [];
 
             // 更新按钮样式
             const buttons = document.querySelectorAll('.lottery-type button');
@@ -305,9 +501,14 @@
             if (config.redCount > 0) {
                 html += '<div class="area-title">红球（选' + config.redCount + '个）</div>';
                 html += '<div class="number-grid">';
-                for (let i = 1; i <= config.redMax; i++) {
-                    const num = i < 10 ? '0' + i : i;
-                    html += '<div class="number" onclick="toggleNumber(this, ' + i + ', \'red\')">' + num + '</div>';
+                const redStart = config.numberFormat === 'oneDigit' ? 0 : 1;
+                for (let i = redStart; i <= config.redMax; i++) {
+                    const num = config.numberFormat === 'oneDigit' ? i : (i < 10 ? '0' + i : i);
+                    const isDan = danNumbers.some(n => n.number === i && n.type === 'red');
+                    const isFiltered = filteredNumbers.some(n => n.number === i && n.type === 'red');
+                    const danClass = isDan ? ' dan' : '';
+                    const filteredClass = isFiltered ? ' filtered' : '';
+                    html += '<div class="number' + danClass + filteredClass + '" onclick="toggleNumber(this, ' + i + ', \'red\')">' + num + '</div>';
                 }
                 html += '</div>';
             }
@@ -316,9 +517,14 @@
             if (config.blueCount > 0) {
                 html += '<div class="area-title">蓝球（选' + config.blueCount + '个）</div>';
                 html += '<div class="number-grid">';
-                for (let i = 1; i <= config.blueMax; i++) {
-                    const num = i < 10 ? '0' + i : i;
-                    html += '<div class="number" onclick="toggleNumber(this, ' + i + ', \'blue\')">' + num + '</div>';
+                const blueStart = config.numberFormat === 'oneDigit' ? 0 : 1;
+                for (let i = blueStart; i <= config.blueMax; i++) {
+                    const num = config.numberFormat === 'oneDigit' ? i : (i < 10 ? '0' + i : i);
+                    const isDan = danNumbers.some(n => n.number === i && n.type === 'blue');
+                    const isFiltered = filteredNumbers.some(n => n.number === i && n.type === 'blue');
+                    const danClass = isDan ? ' dan' : '';
+                    const filteredClass = isFiltered ? ' filtered' : '';
+                    html += '<div class="number' + danClass + filteredClass + '" onclick="toggleNumber(this, ' + i + ', \'blue\')">' + num + '</div>';
                 }
                 html += '</div>';
             }
@@ -329,25 +535,78 @@
         // 切换号码选中状态
         function toggleNumber(element, number, type) {
             const config = lotteryConfig[currentLotteryType];
-            const index = selectedNumbers.findIndex(n => n.number === number && n.type === type);
 
-            if (index > -1) {
-                // 取消选中
-                selectedNumbers.splice(index, 1);
-                element.classList.remove('selected');
-            } else {
-                // 检查是否超过限制
-                const count = selectedNumbers.filter(n => n.type === type).length;
-                const maxCount = type === 'red' ? config.redCount : config.blueCount;
+            if (is胆拖Mode) {
+                // 胆拖模式
+                const danIndex = danNumbers.findIndex(n => n.number === number && n.type === type);
+                const filterIndex = filteredNumbers.findIndex(n => n.number === number && n.type === type);
 
-                if (count >= maxCount) {
-                    alert(type === 'red' ? '红球最多选' + maxCount + '个' : '蓝球最多选' + maxCount + '个');
-                    return;
+                if (danIndex > -1) {
+                    // 取消胆码
+                    danNumbers.splice(danIndex, 1);
+                    element.classList.remove('dan');
+                } else if (filterIndex > -1) {
+                    // 从过滤号码转为胆码
+                    filteredNumbers.splice(filterIndex, 1);
+                    element.classList.remove('filtered');
+                    danNumbers.push({ number, type });
+                    element.classList.add('dan');
+                } else {
+                    // 检查胆码数量是否超过限制
+                    const danCount = danNumbers.filter(n => n.type === type).length;
+                    const maxCount = type === 'red' ? config.redCount : config.blueCount;
+
+                    if (danCount >= maxCount - 1) {
+                        alert(type === 'red' ? '胆码最多选' + (maxCount - 1) + '个' : '胆码最多选' + (maxCount - 1) + '个');
+                        return;
+                    }
+
+                    // 设为胆码
+                    danNumbers.push({ number, type });
+                    element.classList.add('dan');
                 }
+            } else if (is过滤Mode) {
+                // 过滤模式
+                const filterIndex = filteredNumbers.findIndex(n => n.number === number && n.type === type);
+                const danIndex = danNumbers.findIndex(n => n.number === number && n.type === type);
 
-                // 选中号码
-                selectedNumbers.push({ number, type });
-                element.classList.add('selected');
+                if (filterIndex > -1) {
+                    // 取消过滤
+                    filteredNumbers.splice(filterIndex, 1);
+                    element.classList.remove('filtered');
+                } else if (danIndex > -1) {
+                    // 从胆码转为过滤号码
+                    danNumbers.splice(danIndex, 1);
+                    element.classList.remove('dan');
+                    filteredNumbers.push({ number, type });
+                    element.classList.add('filtered');
+                } else {
+                    // 设为过滤号码
+                    filteredNumbers.push({ number, type });
+                    element.classList.add('filtered');
+                }
+            } else {
+                // 普通模式
+                const index = selectedNumbers.findIndex(n => n.number === number && n.type === type);
+
+                if (index > -1) {
+                    // 取消选中
+                    selectedNumbers.splice(index, 1);
+                    element.classList.remove('selected');
+                } else {
+                    // 检查是否超过限制
+                    const count = selectedNumbers.filter(n => n.type === type).length;
+                    const maxCount = type === 'red' ? config.redCount : config.blueCount;
+
+                    if (count >= maxCount) {
+                        alert(type === 'red' ? '红球最多选' + maxCount + '个' : '蓝球最多选' + maxCount + '个');
+                        return;
+                    }
+
+                    // 选中号码
+                    selectedNumbers.push({ number, type });
+                    element.classList.add('selected');
+                }
             }
 
             updateResult();
@@ -365,12 +624,12 @@
 
             const redNumbers = selectedNumbers
                 .filter(n => n.type === 'red')
-                .map(n => n.number < 10 ? '0' + n.number : n.number)
+                .map(n => config.numberFormat === 'oneDigit' ? n.number : (n.number < 10 ? '0' + n.number : n.number))
                 .sort((a, b) => a - b);
 
             const blueNumbers = selectedNumbers
                 .filter(n => n.type === 'blue')
-                .map(n => n.number < 10 ? '0' + n.number : n.number)
+                .map(n => config.numberFormat === 'oneDigit' ? n.number : (n.number < 10 ? '0' + n.number : n.number))
                 .sort((a, b) => a - b);
 
             let result = '';
@@ -389,29 +648,85 @@
             const config = lotteryConfig[currentLotteryType];
             selectedNumbers = [];
 
-            // 随机选择红球
+            // 获取胆码和过滤号码
+            const redDanNumbers = danNumbers.filter(n => n.type === 'red').map(n => n.number);
+            const blueDanNumbers = danNumbers.filter(n => n.type === 'blue').map(n => n.number);
+            const redFilteredNumbers = filteredNumbers.filter(n => n.type === 'red').map(n => n.number);
+            const blueFilteredNumbers = filteredNumbers.filter(n => n.type === 'blue').map(n => n.number);
+
+            // 红球
             if (config.redCount > 0) {
-                const redNumbers = [];
-                while (redNumbers.length < config.redCount) {
-                    const num = Math.floor(Math.random() * config.redMax) + 1;
-                    if (!redNumbers.includes(num)) {
+                // 检查胆码数量是否超过限制
+                if (redDanNumbers.length >= config.redCount) {
+                    alert('红球胆码数量不能超过' + (config.redCount - 1) + '个');
+                    return;
+                }
+
+                // 检查可选号码是否足够
+                const redStart = config.numberFormat === 'oneDigit' ? 0 : 1;
+                const totalRedNumbers = config.redMax - redStart + 1;
+                const availableRedNumbers = totalRedNumbers - redDanNumbers.length - redFilteredNumbers.length;
+                if (availableRedNumbers < config.redCount - redDanNumbers.length) {
+                    alert('红球可选号码不足，请减少胆码或过滤号码');
+                    return;
+                }
+
+                const redNumbers = [...redDanNumbers];
+                let attempts = 0;
+                const maxAttempts = 1000;
+                
+                while (redNumbers.length < config.redCount && attempts < maxAttempts) {
+                    const num = Math.floor(Math.random() * (config.redMax - redStart + 1)) + redStart;
+                    if (!redNumbers.includes(num) && !redFilteredNumbers.includes(num)) {
                         redNumbers.push(num);
                     }
+                    attempts++;
                 }
+
+                if (redNumbers.length < config.redCount) {
+                    alert('红球选号失败，请减少胆码或过滤号码');
+                    return;
+                }
+                
                 redNumbers.forEach(num => {
                     selectedNumbers.push({ number: num, type: 'red' });
                 });
             }
 
-            // 随机选择蓝球
+            // 蓝球
             if (config.blueCount > 0) {
-                const blueNumbers = [];
-                while (blueNumbers.length < config.blueCount) {
-                    const num = Math.floor(Math.random() * config.blueMax) + 1;
-                    if (!blueNumbers.includes(num)) {
+                // 检查胆码数量是否超过限制
+                if (blueDanNumbers.length >= config.blueCount) {
+                    alert('蓝球胆码数量不能超过' + (config.blueCount - 1) + '个');
+                    return;
+                }
+
+                // 检查可选号码是否足够
+                const blueStart = config.numberFormat === 'oneDigit' ? 0 : 1;
+                const totalBlueNumbers = config.blueMax - blueStart + 1;
+                const availableBlueNumbers = totalBlueNumbers - blueDanNumbers.length - blueFilteredNumbers.length;
+                if (availableBlueNumbers < config.blueCount - blueDanNumbers.length) {
+                    alert('蓝球可选号码不足，请减少胆码或过滤号码');
+                    return;
+                }
+
+                const blueNumbers = [...blueDanNumbers];
+                let attempts = 0;
+                const maxAttempts = 1000;
+                
+                while (blueNumbers.length < config.blueCount && attempts < maxAttempts) {
+                    const num = Math.floor(Math.random() * (config.blueMax - blueStart + 1)) + blueStart;
+                    if (!blueNumbers.includes(num) && !blueFilteredNumbers.includes(num)) {
                         blueNumbers.push(num);
                     }
+                    attempts++;
                 }
+
+                if (blueNumbers.length < config.blueCount) {
+                    alert('蓝球选号失败，请减少胆码或过滤号码');
+                    return;
+                }
+                
                 blueNumbers.forEach(num => {
                     selectedNumbers.push({ number: num, type: 'blue' });
                 });
@@ -430,12 +745,12 @@
                 const config = lotteryConfig[currentLotteryType];
                 const redNumbers = selectedNumbers
                     .filter(n => n.type === 'red')
-                    .map(n => n.number < 10 ? '0' + n.number : n.number)
+                    .map(n => config.numberFormat === 'oneDigit' ? n.number : (n.number < 10 ? '0' + n.number : n.number))
                     .sort((a, b) => a - b);
 
                 const blueNumbers = selectedNumbers
                     .filter(n => n.type === 'blue')
-                    .map(n => n.number < 10 ? '0' + n.number : n.number)
+                    .map(n => config.numberFormat === 'oneDigit' ? n.number : (n.number < 10 ? '0' + n.number : n.number))
                     .sort((a, b) => a - b);
 
                 let result = '';
